@@ -39,7 +39,7 @@ public class Demo21MainActivity extends AppCompatActivity {
 
         todoDAO = new TodoDAO(this);
         todoList = todoDAO.getAllTodo();
-        adapter = new TodoAdapter(todoList);
+        adapter = new TodoAdapter(this,todoList,todoDAO);
         recyclerView.setLayoutManager(new LinearLayoutManager(Demo21MainActivity.this));
         recyclerView.setAdapter(adapter);
         btnAdd.setOnClickListener(new View.OnClickListener() {

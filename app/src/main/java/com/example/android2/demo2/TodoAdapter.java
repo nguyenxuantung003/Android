@@ -1,6 +1,8 @@
 package com.example.android2.demo2;
 
 import android.annotation.SuppressLint;
+import android.app.AlertDialog;
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,8 +31,13 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
     public void setOnItemClickListener(OnItemClickListener listener){
         this.listener = listener;
     }
-    public TodoAdapter(List<Todo> todoList){
+
+    private Context context;
+    private TodoDAO todoDAO;
+    public TodoAdapter(Context context,  List<Todo> todoList, TodoDAO todoDAO){
+        this.context = context;
         this.todoList = todoList;
+        this.todoDAO = todoDAO;
     }
     @NonNull
     @Override
@@ -58,6 +65,27 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
                 }
             }
         });
+        // mo ham xoa
+        holder.btnDelete.setOnClickListener(v -> {
+            showdeleteConfirmDialog(holder.getAdapterPosition());
+        });
+    }
+    // dialog cho xoa
+    private void showdeleteConfirmDialog(int position){
+        new AlertDialog.Builder(context)
+                .setTitle("Xac nhan xoa")
+                .setMessage("Ban co muon xoa khong???????")
+                .setPositiveButton("OK" ,(dialog, which) -> deleteTodoItem(position))
+                .setNegativeButton("Cancel" , null)
+                .show();
+
+    }
+    private void deleteTodoItem(int position){
+        Todo todo = todoList.get(position);
+        todoDAO.deleteTodo(todo.getId());
+        todoList.remove(position);
+        notifyItemRemoved(position);
+        notifyItemRangeChanged(position,todoList.size());
     }
 
     @Override
@@ -85,7 +113,7 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
                     if(listener != null){
                         int pos = getAdapterPosition(); // lay ve vi tri can xoa
                         if(pos != RecyclerView.NO_POSITION){
-                            listener.onDeleteClick(pos);
+                          //  listener.onDeleteClick(pos);
                         }
                     }
                 }
@@ -102,7 +130,9 @@ public class TodoAdapter extends RecyclerView.Adapter<TodoAdapter.TodoViewHolder
                 }
             });
 
+
         }
+
     }
 
 }
